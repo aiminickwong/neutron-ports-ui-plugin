@@ -1,0 +1,11 @@
+{
+    "name": "neutron-ports",
+    "url": "plugin/neutron-ports/plugin.html",
+    "config": {
+        "neutron_url": "/neutron",
+        "engine_api_url": "/ovirt-engine/api",
+        "tab_content_url": "plugin/neutron-ports/neutron-ports.html",
+        "allowedOrigins": ["https://engine_host"]
+    },
+    "resourcePath": "neutron-ports-resources"
+}

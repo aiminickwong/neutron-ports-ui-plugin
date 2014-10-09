@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript">
+
+var api = parent.pluginApi("neutron-ports");
+var conf = api.configObject();
+api.options({allowedMessageOrigins: conf.allowedOrigins});
+
+var token = "neutron-ports";
+
+var network = null;
+var neutronPortsWindow = null;
+
+
+function setAccessible(accessible) {
+    api.setTabAccessible(token, accessible);
+}
+
+function getJson(url, cfunc, extra_headers) {
+    xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            cfunc(JSON.parse(xmlhttp.responseText));
+        }
+    }
+    xmlhttp.open("GET", url, true);
+    xmlhttp.setRequestHeader("Accept", "application/json");
+    if (extra_headers != null ) {
+        for (var header in extra_headers) {
+            if (extra_headers.hasOwnProperty(header)) {
+                xmlhttp.setRequestHeader(header, extra_headers[header]);
+            }
+        }
+    }
+    xmlhttp.send();
+}
+
+function searchExternalNetworksCallback(obj) {
+    if (network == null) {
+        return;
+    }
+    if (obj.network.map(function (n) {return n.id}).indexOf(network.id) != -1) {
+        setAccessible(true);
+    }
+}
+
+function searchExternalNetworks() {
+    getJson(conf.engine_api_url + "/networks?search=provider%21%3Dnull", searchExternalNetworksCallback, {'Prefer' : 'persistent-auth'});
+}
+
+function getNeutronNetworkPortsCallback(obj) {
+    if (neutronPortsWindow == null) {
+      return;
+    }
+    neutronPortsWindow.update(obj.ports);
+}
+
+
+function getNeutronNetworkPorts(network_id) {
+    getJson(conf.neutron_url + "/ports?network_id=" + network_id, getNeutronNetworkPortsCallback);
+}
+
+function getNeutronNetworkCallback(obj) {
+    getNeutronNetworkPorts(obj.networks[0].id);
+}
+
+function getNeutronNetwork(network) {
+    // should be the same name internal and external
+    getJson(conf.neutron_url + "/networks.json?name=" + network.name, getNeutronNetworkCallback);
+}
+
+api.register({
+    UiInit: function() {
+        api.addSubTab("Network", "Ports", token, conf.tab_content_url);
+        setAccessible(false);
+    },
+    NetworkSelectionChange: function() {
+        setAccessible(false);
+        if (arguments.length == 1) {
+            network = arguments[0];
+            searchExternalNetworks();
+        } else {
+            network = null;
+            neutronPortsWindow = null;
+        }
+    },
+    MessageReceived: function(data, sourceWindow) {
+        switch (data) {
+        case "GetPorts":
+            neutronPortsWindow = sourceWindow;
+            getNeutronNetwork(network);
+            break;
+        }
+    },
+});
+api.ready();
+</script>
+</head>
+<body>
+</body>
+</html>

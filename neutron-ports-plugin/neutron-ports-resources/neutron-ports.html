@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 0px 5px;
+    text-align: center;
+}
+</style>
+</head>
+<body>
+<table id="ports">
+</table>
+<script type='text/javascript'>
+function toLine(arr, is_header) {
+    var ret = "<tr>\n";
+    var open = is_header?"<th>":"<td>";
+    var close = is_header?"</th>":"</td>";
+    for (var i = 0; i < arr.length; i++) {
+        ret += open + arr[i] + close + "\n";
+    }
+    ret += "</tr>\n";
+    return ret;
+}
+
+function portToLine(port) {
+    return toLine(
+        [
+            port.name,
+            port.fixed_ips.map(function (e) {return e.ip_address}),
+            port.mac_address,
+            port.status,
+            (port.admin_state_up)?"UP":"DOWN",
+            port.device_owner
+        ],
+        false);
+}
+
+function headerLine() {
+    return toLine(
+        ["Name", "IP", "Mac Address", "Status", "Admin State", "Device Owner"],
+        true);
+}
+
+parent.postMessage('GetPorts', '*');
+var update = function(ports) {
+    var content = headerLine();
+    for (var i = 0; i < ports.length; i++) {
+        content += portToLine(ports[i]);
+    }
+    document.getElementById('ports').innerHTML = content;
+};
+</script>
+
+</body>
+</html>
