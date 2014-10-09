@@ -36,6 +36,14 @@ function getJson(url, cfunc, extra_headers) {
     xmlhttp.send();
 }
 
+function getEngineJson(url, cfunc) {
+    getJson(conf.engine_api_url + url, cfunc, {'Prefer' : 'persistent-auth'});
+}
+
+function getNeutronJson(url, cfunc) {
+    getJson(conf.neutron_url + url, cfunc);
+}
+
 function searchExternalNetworksCallback(obj) {
     if (network == null) {
         return;
@@ -46,7 +54,7 @@ function searchExternalNetworksCallback(obj) {
 }
 
 function searchExternalNetworks() {
-    getJson(conf.engine_api_url + "/networks?search=provider%21%3Dnull", searchExternalNetworksCallback, {'Prefer' : 'persistent-auth'});
+    getEngineJson("/networks?search=provider%21%3Dnull", searchExternalNetworksCallback);
 }
 
 function getNeutronNetworkPortsCallback(obj) {
@@ -58,7 +66,7 @@ function getNeutronNetworkPortsCallback(obj) {
 
 
 function getNeutronNetworkPorts(network_id) {
-    getJson(conf.neutron_url + "/ports?network_id=" + network_id, getNeutronNetworkPortsCallback);
+    getNeutronJson("/ports?network_id=" + network_id, getNeutronNetworkPortsCallback);
 }
 
 function getNeutronNetworkCallback(obj) {
@@ -67,7 +75,7 @@ function getNeutronNetworkCallback(obj) {
 
 function getNeutronNetwork(network) {
     // should be the same name internal and external
-    getJson(conf.neutron_url + "/networks.json?name=" + network.name, getNeutronNetworkCallback);
+    getNeutronJson("/networks.json?name=" + network.name, getNeutronNetworkCallback);
 }
 
 api.register({
