@@ -44,38 +44,40 @@ function getNeutronJson(url, cfunc) {
     getJson(conf.neutron_url + url, cfunc);
 }
 
-function searchExternalNetworksCallback(obj) {
-    if (network == null) {
-        return;
-    }
-    if (obj.network.map(function (n) {return n.id}).indexOf(network.id) != -1) {
-        setAccessible(true);
-    }
-}
-
 function searchExternalNetworks() {
-    getEngineJson("/networks?search=provider%21%3Dnull", searchExternalNetworksCallback);
+    getEngineJson(
+        "/networks?search=provider%21%3Dnull",
+        function (obj) {
+            if (network == null) {
+                return;
+            }
+            var externalNetworks = obj.network.map(function (n) {return n.id});
+            if (externalNetworks.indexOf(network.id) != -1) {
+                setAccessible(true);
+            }
+        }
+    );
 }
-
-function getNeutronNetworkPortsCallback(obj) {
-    if (neutronPortsWindow == null) {
-      return;
-    }
-    neutronPortsWindow.update(obj.ports);
-}
-
 
 function getNeutronNetworkPorts(network_id) {
-    getNeutronJson("/ports?network_id=" + network_id, getNeutronNetworkPortsCallback);
-}
-
-function getNeutronNetworkCallback(obj) {
-    getNeutronNetworkPorts(obj.networks[0].id);
+    getNeutronJson(
+        "/ports?network_id=" + network_id,
+        function (obj) {
+            if (neutronPortsWindow == null) {
+                return;
+            }
+            neutronPortsWindow.update(obj.ports);
+        }
+    );
 }
 
 function getNeutronNetwork(network) {
-    // should be the same name internal and external
-    getNeutronJson("/networks.json?name=" + network.name, getNeutronNetworkCallback);
+    getNeutronJson(
+        "/networks.json?name=" + network.name,
+        function (obj) {
+            getNeutronNetworkPorts(obj.networks[0].id);
+        }
+    );
 }
 
 api.register({
