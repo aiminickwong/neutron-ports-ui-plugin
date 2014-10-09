@@ -72,6 +72,9 @@ function getNeutronNetworkPorts(network_id) {
 }
 
 function getNeutronNetwork(network) {
+    if (network == null) {
+        return;
+    }
     getNeutronJson(
         "/networks.json?name=" + network.name,
         function (obj) {
