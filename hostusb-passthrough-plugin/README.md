@@ -11,6 +11,7 @@ A UI plugin of oVirt webadmin to passthrough host USB devices into guests
 3. The UI part depends on [patternfly](https://github.com/patternfly), so download patternfly.min.js and patternfly.min.css and put them in the following places:
   * patternfly.min.js -> /usr/share/ovirt-engine/ui-plugins/hostusb-passthrough-resources/js/patternfly.min.js
   * patternfly.min.css -> /usr/share/ovirt-engine/ui-plugins/hostusb-passthrough-resources/css/patternfly.min.css
+
 ## Host side
 1. Copy the agent script from the repository to every host:
   * agent/usb-passthrough.py
