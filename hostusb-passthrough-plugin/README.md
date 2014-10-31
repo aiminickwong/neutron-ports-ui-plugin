@@ -19,12 +19,12 @@ A UI plugin of oVirt webadmin to passthrough host USB devices into guests
   * python usb-passthrough.py
 
 # Known Issues
-* Browsers report mixed content problem, please turn off the protection for the page
+* Browsers report mixed content problem, please turn off the protection for the page (fixed by commit f317564d2)
 * Due to libvirt/vdsm's security policy, user should manully run "chmod o+w /dev/bus/usb/BUS/DEVICE" for the corresponding device on the hosts which would be passed through to allow the user qemu to access to the device
 * Bypass vdsm, caution split-brain
-* No proxy implemented, which means users should be able to access both the engine and the hosts on the working machine
+* No proxy implemented, which means users should be able to access both the engine and the hosts on the working machine (fixed by commit f317564d2)
 
 # TODO
-* Proxy on engine?
+* ~~Proxy on engine?~~ (fixed by commit f317564d2)
 * Startup/stop service script for the agent?
-* Deal with the mixed content issue, use AJAX instead of JSONP?
+* ~~Deal with the mixed content issue, use AJAX instead of JSONP?~~ (fixed by commit f317564d2)
