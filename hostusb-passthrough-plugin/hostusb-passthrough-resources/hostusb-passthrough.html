@@ -9,9 +9,21 @@
 <table id="hostusb" class="datatable table table-striped table-bordered table-hover">
 </table>
 <script type='text/javascript'>
-var host_address = null;
+var agent_proxy = null;
+var agent = null;
 var vm_id = null;
 var vms_dict = null;
+
+function jp(uri) {
+    var script = document.createElement("script");
+    var url = "http://" + agent + uri;
+    if (agent_proxy != null) {
+        url = agent_proxy + "?url=" + encodeURIComponent(url);
+    }
+    script.setAttribute("src", url);
+    script.setAttribute("type", "text/javascript");
+    document.getElementsByTagName('head')[0].appendChild(script);
+}
 
 function toLine(arr, is_header) {
     var ret = "<tr>\n";
@@ -54,19 +66,11 @@ function detached(vm, devname) {
 }
 
 function attach(vm, devname) {
-    var script = document.createElement("script");
-    var url = "http://" + host_address + "/attach.js?vmId=" + vm + "&devname=" + devname;
-    script.setAttribute("src", url);
-    script.setAttribute("type", "text/javascript");
-    document.getElementsByTagName('head')[0].appendChild(script);
+    jp("/attach.js?vmId=" + vm + "&devname=" + devname);
 }
 
 function detach(vm, devname) {
-    var script = document.createElement("script");
-    var url = "http://" + host_address + "/detach.js?vmId=" + vm + "&devname=" + devname;
-    script.setAttribute("src", url);
-    script.setAttribute("type", "text/javascript");
-    document.getElementsByTagName('head')[0].appendChild(script);
+    jp("/detach.js?vmId=" + vm + "&devname=" + devname);
 }
 
 function getAction(vm, devname) {
@@ -104,15 +108,12 @@ function AllListed(devices) {
 }
 
 parent.postMessage('ready', '*');
-var update = function(host, vm, vms) {
-    host_address = host;
+var update = function(proxy, ag, vm, vms) {
+    agent_proxy = proxy;
+    agent = ag;
     vm_id = vm;
     vms_dict = vms;
-    var script = document.createElement("script");
-    var url = "http://" + host_address + "/listdev.js";
-    script.setAttribute("src", url);
-    script.setAttribute("type", "text/javascript");
-    document.getElementsByTagName('head')[0].appendChild(script);
+    jp("/listdev.js");
 };
 </script>
 </body>

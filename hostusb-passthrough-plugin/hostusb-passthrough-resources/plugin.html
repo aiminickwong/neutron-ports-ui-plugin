@@ -11,7 +11,7 @@ var token = "hostusb-passthrough";
 
 var vm = null;
 var host = null;
-var host_address = null;
+var agent = null;
 var vmHostUSBWindow = null;
 
 function setAccessible(accessible) {
@@ -50,7 +50,7 @@ function searchVMsOnHost(hostname) {
         "/vms?search=host%3D" + hostname,
         function (obj) {
             obj.vm.map(function (n) {vms[n.id] = n.name;});
-            vmHostUSBWindow.update(host_address, vm, vms);
+            vmHostUSBWindow.update(conf.agent_proxy, agent, vm, vms);
         }
     );
 }
@@ -59,7 +59,7 @@ function updateHostUSB() {
     getEngineJson(
         "/hosts/" + host,
         function (obj) {
-            host_address = obj.address + ":" + conf.agent_port;
+            agent = obj.address + ":" + conf.agent_port;
             searchVMsOnHost(obj.name);
         }
     );

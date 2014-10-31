@@ -133,7 +133,7 @@ class myHandler(BaseHTTPRequestHandler):
             if self.check() and self.run():
                 mimetype = "application/javascript"
                 self.send_response(200)
-                self.send_header("Content-type", mimetype)
+                self.send_header("Content-Type", mimetype)
                 self.end_headers()
                 self.wfile.write(self.ret)
             else:
